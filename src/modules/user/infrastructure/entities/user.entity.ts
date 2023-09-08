@@ -9,7 +9,11 @@ export class UserEntity {
   first_name: string;
   @Column()
   last_name: string;
+
   @Column({ unique: true })
   @IsEmail()
   email: string;
+
+  @Column({ nullable: false })
+  password: string;
 }

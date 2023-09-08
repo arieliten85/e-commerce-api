@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Inject,
-  InternalServerErrorException,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
 import { CreateUserDto } from "../../controllers/dto/create-user.dto";
 import { UpdateUserDto } from "../../controllers/dto/update-user.dto";
 
@@ -13,11 +8,8 @@ import { USER_REPOSITORY } from "../repository/user.repository";
 import { UserMysqlRepository } from "../../infrastructure/user.mysql.repository";
 
 export const ERROR_MESSAGES = {
-  ERROR_CREATE: "Error creating the user",
-  ERROR_FIND_ALL: "Error retrieving users",
-  ERROR_FIND_BY_ID: "Error retrieving the user",
-  ERROR_UPDATE: "Error updating the user",
-  ERROR_DELETE: "Error deleting the user",
+  ERROR_EMAIL_EXISTS: "Email already exists",
+
   USER_NOT_FOUND: "User not found",
 };
 
@@ -30,26 +22,12 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    try {
-      const userClass = this.mapperUserService.dtoToClass(createUserDto);
-      return await this.userMysqlRepository.create(userClass);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        ERROR_MESSAGES.ERROR_CREATE,
-        error,
-      );
-    }
+    const userClass = this.mapperUserService.dtoToClass(createUserDto);
+    return await this.userMysqlRepository.create(userClass);
   }
 
   async findAll(): Promise<User[]> {
-    try {
-      return await this.userMysqlRepository.findAll();
-    } catch (error) {
-      throw new InternalServerErrorException(
-        ERROR_MESSAGES.ERROR_FIND_ALL,
-        error,
-      );
-    }
+    return await this.userMysqlRepository.findAll();
   }
 
   async findById(id: number): Promise<User> {

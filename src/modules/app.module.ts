@@ -3,6 +3,7 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
+import { TestModule } from "./test/test.module";
 
 @Module({
   imports: [
@@ -17,24 +18,9 @@ import { AuthModule } from "./auth/auth.module";
       synchronize: true,
     }),
 
-    // TypeOrmModule.forRootAsync({
-    //   useFactory: () => ({
-    //     type: "mysql",
-    //     host: "localhost",
-    //     port: 3306,
-    //     username: "root",
-    //     password: "root",
-    //     database: "e-commerce-demo",
-    //     entities: [UserEntity],
-    //     synchronize: false,
-    //     autoLoadEntities: true,
-    //   }),
-    //   dataSourceFactory: async (options) => {
-    //     return new DataSource(options).initialize();
-    //   },
-    // }),
     UserModule,
     AuthModule,
+    TestModule,
   ],
   controllers: [],
   providers: [],

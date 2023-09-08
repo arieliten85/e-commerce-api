@@ -10,6 +10,8 @@ export class MapperUserService {
     newClass.firstName = classDto.firstName;
     newClass.lastName = classDto.lastName;
     newClass.email = classDto.email;
+    newClass.password = classDto.password;
+
     return newClass;
   }
 
@@ -20,6 +22,7 @@ export class MapperUserService {
     newEntity.first_name = userClass.firstName;
     newEntity.last_name = userClass.lastName;
     newEntity.email = userClass.email;
+    newEntity.password = userClass.password;
 
     return newEntity;
   }
@@ -30,7 +33,7 @@ export class MapperUserService {
     newClass.firstName = userEntity.first_name;
     newClass.lastName = userEntity.last_name;
     newClass.email = userEntity.email;
-
+    newClass.password = userEntity.password;
     return newClass;
   }
 }

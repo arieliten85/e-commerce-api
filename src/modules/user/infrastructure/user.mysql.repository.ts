@@ -28,9 +28,7 @@ export class UserMysqlRepository implements UserRepository {
 
   async create(user: User): Promise<User> {
     const userEntity = this.mapperUserService.classToEntity(user);
-
     const createdUserEntity = await this.userRepository.save(userEntity);
-
     return this.mapperUserService.entityToClass(createdUserEntity);
   }
 
