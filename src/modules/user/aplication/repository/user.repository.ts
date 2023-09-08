@@ -8,4 +8,5 @@ export interface UserRepository {
   findById(id: number): Promise<User>;
   update(currentUser: User, newUser: User): Promise<User>;
   delete(id: number): Promise<void>;
+  finByEmail(email: string): Promise<User>;
 }

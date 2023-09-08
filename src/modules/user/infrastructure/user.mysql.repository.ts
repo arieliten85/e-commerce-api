@@ -15,6 +15,17 @@ export class UserMysqlRepository implements UserRepository {
     private readonly mapperUserService: MapperUserService,
   ) {}
 
+  async finByEmail(email: string): Promise<User | null> {
+    const userFound = await this.userRepository.findOne({
+      where: { email },
+    });
+    if (!userFound) {
+      return null;
+    }
+
+    return this.mapperUserService.entityToClass(userFound);
+  }
+
   async create(user: User): Promise<User> {
     const userEntity = this.mapperUserService.classToEntity(user);
 
