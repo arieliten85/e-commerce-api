@@ -6,7 +6,6 @@ import * as request from "supertest";
 import { AppModule } from "../../../app.module";
 import { USER_REPOSITORY } from "../../aplication/repository/user.repository";
 import { userMock } from "./mocks/userMocks";
-import { UserEntity } from "../../infrastructure/entities/user.entity";
 
 const USER_NOT_FOUND = "User not found";
 
