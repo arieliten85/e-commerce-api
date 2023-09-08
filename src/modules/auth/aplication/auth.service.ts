@@ -1,28 +1,81 @@
-import { Injectable } from "@nestjs/common";
-import { CreateAuthDto } from "../controllers/dto/create-auth.dto";
-import { UpdateAuthDto } from "../controllers/dto/update-auth.dto";
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
+import { RegisterDto } from "../controllers/dto/RegisterDto";
+import {
+  USER_REPOSITORY,
+  UserRepository,
+} from "src/modules/user/aplication/repository/user.repository";
 
+import * as bcrypt from "bcrypt";
+import { MapperUserService } from "src/modules/user/aplication/mappers/user.mapper";
+import { LoginDto } from "../controllers/dto/LoginDto";
+import { JwtService } from "@nestjs/jwt";
+type IResgister = {
+  message: string;
+};
+export const ERROR_MESSAGES = {
+  ERROR_EMAIL_EXISTS: "Email already exists",
+  USER_INVALID: "User invalid",
+};
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    console.log(createAuthDto);
-    return "This action adds a new auth";
-  }
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: UserRepository,
+    private readonly mapperUserService: MapperUserService,
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+    private jwtService: JwtService,
+  ) {}
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+  async register(registerDto: RegisterDto): Promise<IResgister> {
+    const userExist = await this.userRepository.finByEmail(registerDto.email);
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    console.log(updateAuthDto);
-    return `This action updates a #${id} auth`;
-  }
+    if (userExist) {
+      throw new BadRequestException(ERROR_MESSAGES.ERROR_EMAIL_EXISTS);
+    }
+    const userResgisterClass = this.mapperUserService.dtoToClass(registerDto);
+    const saltOrRounds = 10;
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    const hashedPassword = await bcrypt.hash(
+      registerDto.password,
+      saltOrRounds,
+    );
+    userResgisterClass.password = hashedPassword;
+    await this.userRepository.create(userResgisterClass);
+
+    return {
+      message: "User created successfully",
+    };
+  }
+  async login(loginDto: LoginDto) {
+    const user = await this.userRepository.finByEmail(loginDto.email);
+
+    if (!user) {
+      throw new UnauthorizedException(ERROR_MESSAGES.USER_INVALID);
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException(ERROR_MESSAGES.USER_INVALID);
+    }
+
+    const payload = {
+      name: user.firstName,
+      lasName: user.lastName,
+      email: user.email,
+    };
+
+    const access_token = await this.jwtService.signAsync(payload);
+    return {
+      access_token,
+    };
   }
 }

@@ -8,8 +8,6 @@ import { USER_REPOSITORY } from "../repository/user.repository";
 import { UserMysqlRepository } from "../../infrastructure/user.mysql.repository";
 
 export const ERROR_MESSAGES = {
-  ERROR_EMAIL_EXISTS: "Email already exists",
-
   USER_NOT_FOUND: "User not found",
 };
 

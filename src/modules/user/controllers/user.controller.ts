@@ -8,16 +8,18 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import { UserService } from "../aplication/services/user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "../domain/user.domain";
+import { AuthGuard } from "src/modules/auth/guard/auth.guard";
 
 @Controller("api/user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
+  @UseGuards(AuthGuard)
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return await this.userService.create(createUserDto);
