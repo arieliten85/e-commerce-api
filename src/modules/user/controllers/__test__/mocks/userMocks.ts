@@ -3,6 +3,7 @@ export const userMock = {
     first_name: "Nuevo Usuario",
     last_name: "Apellido",
     email: "nuevo@example.com",
+    password: "123456",
   },
 
   allUser: [

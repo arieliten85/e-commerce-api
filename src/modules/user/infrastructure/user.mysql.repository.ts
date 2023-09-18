@@ -15,15 +15,16 @@ export class UserMysqlRepository implements UserRepository {
     private readonly mapperUserService: MapperUserService,
   ) {}
 
-  async finByEmail(email: string): Promise<User | null> {
+  async finByEmail(email: string): Promise<UserEntity> {
     const userFound = await this.userRepository.findOne({
       where: { email },
     });
+
     if (!userFound) {
       return null;
     }
 
-    return this.mapperUserService.entityToClass(userFound);
+    return userFound;
   }
 
   async create(user: User): Promise<User> {
@@ -49,9 +50,12 @@ export class UserMysqlRepository implements UserRepository {
     return this.mapperUserService.entityToClass(userFound);
   }
 
-  async update(currentUser: User, newUser: User): Promise<User> {
+  async update(id: number, newUser: User): Promise<User> {
+    const currentUserEntity = await this.userRepository.findOne({
+      where: { id },
+    });
+
     const newUserEntity = this.mapperUserService.classToEntity(newUser);
-    const currentUserEntity = this.mapperUserService.classToEntity(currentUser);
 
     this.userRepository.merge(currentUserEntity, newUserEntity);
     const savedUserEntity = await this.userRepository.save(currentUserEntity);

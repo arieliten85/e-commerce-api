@@ -17,4 +17,8 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  isEmailActive?: boolean;
+
+  resetPasswordToken?: string;
 }

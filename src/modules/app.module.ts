@@ -3,24 +3,32 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
+import { ConfigModule } from "@nestjs/config";
+import { configuration } from "../config/configuration";
+import { ProductModule } from "./product/product.module";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      load: [configuration],
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: "mysql",
-      host: "localhost",
-      port: 3306,
-      username: "root",
-      password: "root",
-      database: "e-commerce-demo",
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       entities: [__dirname + "/**/*.entity{.ts,.js}"],
       synchronize: true,
     }),
 
     UserModule,
     AuthModule,
+    ProductModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [AuthModule],
 })
 export class AppModule {}

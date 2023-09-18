@@ -7,6 +7,7 @@ export class UserEntity {
   id: number;
   @Column()
   first_name: string;
+
   @Column()
   last_name: string;
 
@@ -16,4 +17,7 @@ export class UserEntity {
 
   @Column({ nullable: false })
   password: string;
+
+  @Column({ type: "boolean", default: false })
+  isEmailActive: boolean;
 }

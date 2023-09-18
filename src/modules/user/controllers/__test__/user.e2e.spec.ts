@@ -1,24 +1,21 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-
 import * as request from "supertest";
-
 import { AppModule } from "../../../app.module";
-import { USER_REPOSITORY } from "../../aplication/repository/user.repository";
 import { userMock } from "./mocks/userMocks";
+import { USER_REPOSITORY } from "../../aplication/repository/user.repository";
 
+const URL = "/user/";
 const USER_NOT_FOUND = "User not found";
-
+const mockedUserRepository = {
+  create: jest.fn(),
+  findAll: jest.fn(),
+  findById: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+};
 describe("USER - TESTING", () => {
   let app: INestApplication;
-
-  const mockedUserRepository = {
-    create: jest.fn(),
-    findAll: jest.fn(),
-    findById: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
-  };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -32,12 +29,6 @@ describe("USER - TESTING", () => {
     await app.init();
   });
 
-  afterAll(async () => {
-    if (app) {
-      await app.close();
-    }
-  });
-
   describe("Create - [POST /users]", () => {
     it("should create a new user", async () => {
       const newUser = userMock.newUser;
@@ -46,7 +37,7 @@ describe("USER - TESTING", () => {
         .mockResolvedValueOnce({ id: 3, ...newUser });
 
       const response = await request(app.getHttpServer())
-        .post("/api/user")
+        .post(URL)
         .send(newUser)
         .expect(HttpStatus.CREATED);
 
@@ -65,7 +56,7 @@ describe("USER - TESTING", () => {
         .spyOn(mockedUserRepository, "findAll")
         .mockResolvedValueOnce(allUserResponse);
 
-      const response = await request(app.getHttpServer()).get("/api/user");
+      const response = await request(app.getHttpServer()).get(URL);
 
       expect(Array.isArray(response.body)).toBe(true);
       expect(response.body.length).toEqual(allUserResponse.length);
@@ -86,7 +77,7 @@ describe("USER - TESTING", () => {
         .mockResolvedValueOnce(foundUser);
 
       const response = await request(app.getHttpServer())
-        .get(`/api/user/${userId}`)
+        .get(`${URL}${userId}`)
         .expect(HttpStatus.OK);
 
       expect(response.body).toEqual(foundUser);
@@ -97,7 +88,7 @@ describe("USER - TESTING", () => {
       jest.spyOn(mockedUserRepository, "findById");
 
       const response = await request(app.getHttpServer())
-        .get(`/api/user/${userId}`)
+        .get(`${URL}${userId}`)
         .expect(HttpStatus.NOT_FOUND);
 
       expect(response.body.message).toEqual(USER_NOT_FOUND);
@@ -119,7 +110,7 @@ describe("USER - TESTING", () => {
         .mockResolvedValueOnce({ id: userId, ...updatedUserData });
 
       const response = await request(app.getHttpServer())
-        .put(`/api/user/${userId}`)
+        .put(`${URL}${userId}`)
         .send(updatedUserData)
         .expect(HttpStatus.OK);
 
@@ -132,7 +123,7 @@ describe("USER - TESTING", () => {
       jest.spyOn(mockedUserRepository, "findById").mockResolvedValueOnce(null);
 
       const response = await request(app.getHttpServer())
-        .put(`/api/user/${userId}`)
+        .put(`${URL}${userId}`)
         .send(updatedUserData)
         .expect(HttpStatus.NOT_FOUND);
 
@@ -155,7 +146,7 @@ describe("USER - TESTING", () => {
         .mockResolvedValueOnce({ id: userId, deletedUserData });
 
       const response = await request(app.getHttpServer())
-        .delete(`/api/user/${userId}`)
+        .delete(`${URL}${userId}`)
         .send(deletedUserData)
         .expect(HttpStatus.ACCEPTED);
 
@@ -168,11 +159,18 @@ describe("USER - TESTING", () => {
       jest.spyOn(mockedUserRepository, "findById").mockResolvedValueOnce(null);
 
       const response = await request(app.getHttpServer())
-        .delete(`/api/user/${userId}`)
+        .delete(`${URL}${userId}`)
+
         .send(deletedUserData)
         .expect(HttpStatus.NOT_FOUND);
 
       expect(response.body.message).toEqual(USER_NOT_FOUND);
     });
+  });
+
+  afterAll(async () => {
+    if (app) {
+      await app.close();
+    }
   });
 });

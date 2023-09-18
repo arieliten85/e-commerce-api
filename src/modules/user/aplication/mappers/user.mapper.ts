@@ -11,6 +11,7 @@ export class MapperUserService {
     newClass.lastName = classDto.lastName;
     newClass.email = classDto.email;
     newClass.password = classDto.password;
+    newClass.isEmailActive = classDto.isEmailActive;
 
     return newClass;
   }
@@ -23,6 +24,7 @@ export class MapperUserService {
     newEntity.last_name = userClass.lastName;
     newEntity.email = userClass.email;
     newEntity.password = userClass.password;
+    newEntity.isEmailActive = userClass.isEmailActive;
 
     return newEntity;
   }
@@ -33,7 +35,20 @@ export class MapperUserService {
     newClass.firstName = userEntity.first_name;
     newClass.lastName = userEntity.last_name;
     newClass.email = userEntity.email;
+    newClass.isEmailActive = userEntity.isEmailActive;
+
+    return newClass;
+  }
+
+  entityToClassResetPassword(userEntity: UserEntity) {
+    const newClass = new User();
+    newClass.id = userEntity.id;
+    newClass.firstName = userEntity.first_name;
+    newClass.lastName = userEntity.last_name;
+    newClass.email = userEntity.email;
+    newClass.isEmailActive = userEntity.isEmailActive;
     newClass.password = userEntity.password;
+
     return newClass;
   }
 }
