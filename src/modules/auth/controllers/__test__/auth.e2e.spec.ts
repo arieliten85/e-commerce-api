@@ -58,10 +58,9 @@ describe("Auth - [/auth]", () => {
     });
     it("It should display an message Email already exists ", async () => {
       const dataUserRegister = userMock.dataUserRegister;
-      const dataUserFindByEmail = userMock.dataUserFindByEmail;
       jest
         .spyOn(mockedUserRepository, "finByEmail")
-        .mockResolvedValueOnce(dataUserFindByEmail);
+        .mockResolvedValueOnce({ email: "testssss@correo.com" });
 
       const response = await request(app.getHttpServer())
         .post("/auth/register")

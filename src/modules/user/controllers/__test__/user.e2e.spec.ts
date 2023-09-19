@@ -4,6 +4,7 @@ import * as request from "supertest";
 import { AppModule } from "../../../app.module";
 import { userMock } from "./mocks/userMocks";
 import { USER_REPOSITORY } from "../../aplication/repository/user.repository";
+import { AuthGuard } from "@nestjs/passport";
 
 const URL = "/user/";
 const USER_NOT_FOUND = "User not found";
@@ -16,6 +17,10 @@ const mockedUserRepository = {
 };
 describe("USER - TESTING", () => {
   let app: INestApplication;
+  const responseAuthGuard = {
+    id: 1,
+    email: "wokico1580@correo.com",
+  };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -23,10 +28,25 @@ describe("USER - TESTING", () => {
     })
       .overrideProvider(USER_REPOSITORY)
       .useValue(mockedUserRepository)
+
+      .overrideGuard(AuthGuard("jwt"))
+      .useValue({
+        canActivate: (context) => {
+          const req = context.switchToHttp().getRequest();
+          req.user = responseAuthGuard;
+          return true;
+        },
+      })
       .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
+  });
+
+  afterAll(async () => {
+    if (app) {
+      await app.close();
+    }
   });
 
   describe("Create - [POST /users]", () => {
@@ -47,7 +67,6 @@ describe("USER - TESTING", () => {
       expect(response.body.email).toEqual(newUser.email);
     });
   });
-
   describe("FindAll - [GET /users]", () => {
     it("should retrieve all user", async () => {
       const allUserResponse = userMock.allUser;
@@ -66,7 +85,6 @@ describe("USER - TESTING", () => {
       expect(response.body[0]).toHaveProperty("email");
     });
   });
-
   describe("FindById - [GET /users/:id]", () => {
     it("should find a user by ID", async () => {
       const userId = 1;
@@ -94,7 +112,6 @@ describe("USER - TESTING", () => {
       expect(response.body.message).toEqual(USER_NOT_FOUND);
     });
   });
-
   describe("Update - [PUT /users/:id]", () => {
     it("should update a user by ID", async () => {
       const userId = 1;
@@ -130,7 +147,6 @@ describe("USER - TESTING", () => {
       expect(response.body.message).toEqual(USER_NOT_FOUND);
     });
   });
-
   describe("Delete - [DELETE /users/:id]", () => {
     it("should Delete a user by ID", async () => {
       const userId = 1;
@@ -166,11 +182,5 @@ describe("USER - TESTING", () => {
 
       expect(response.body.message).toEqual(USER_NOT_FOUND);
     });
-  });
-
-  afterAll(async () => {
-    if (app) {
-      await app.close();
-    }
   });
 });

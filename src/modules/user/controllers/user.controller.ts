@@ -9,14 +9,14 @@ import {
   Delete,
   Put,
   Request,
-  // UseGuards,
+  UseGuards,
 } from "@nestjs/common";
 import { UserService } from "../aplication/services/user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "../domain/user.domain";
-//import { AuthGuard } from "@nestjs/passport";
-//@UseGuards(AuthGuard("jwt"))
+import { AuthGuard } from "@nestjs/passport";
+@UseGuards(AuthGuard("jwt"))
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
