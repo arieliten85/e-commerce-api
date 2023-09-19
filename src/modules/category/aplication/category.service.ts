@@ -5,6 +5,7 @@ import { UpdateCategoryDto } from "../controllers/dto/update-category.dto";
 @Injectable()
 export class CategoryService {
   create(createCategoryDto: CreateCategoryDto) {
+    console.log(createCategoryDto);
     return "This action adds a new category";
   }
 
@@ -17,6 +18,7 @@ export class CategoryService {
   }
 
   update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    console.log(updateCategoryDto);
     return `This action updates a #${id} category`;
   }
 

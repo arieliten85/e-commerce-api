@@ -6,7 +6,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
 import { configuration } from "../config/configuration";
 import { ProductModule } from "./product/product.module";
-import { CategoryModule } from './category/category.module';
+import { CategoryModule } from "./category/category.module";
 
 @Module({
   imports: [
