@@ -18,6 +18,9 @@ export class UserEntity {
   @Column({ nullable: false })
   password: string;
 
+  @Column({ default: "user" })
+  role: string;
+
   @Column({ type: "boolean", default: false })
   isEmailActive: boolean;
 }
