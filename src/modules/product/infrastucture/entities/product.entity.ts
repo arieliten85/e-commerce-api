@@ -26,7 +26,10 @@ export class ProductEntity {
   @Column()
   price: number;
 
-  @OneToMany(() => ImagesEntity, (images) => images.product, { cascade: true })
+  @OneToMany(() => ImagesEntity, (images) => images.product, {
+    cascade: true,
+    onDelete: "SET NULL",
+  })
   images?: ImagesEntity[];
 
   @JoinColumn({ name: "category_id" })

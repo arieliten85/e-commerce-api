@@ -19,49 +19,38 @@ export class UserMysqlRepository implements UserRepository {
     const userFound = await this.userRepository.findOne({
       where: { email },
     });
-
     if (!userFound) {
       return null;
     }
-
     return userFound;
   }
-
   async create(user: User): Promise<User> {
     const userEntity = this.mapperUserService.classToEntity(user);
     const createdUserEntity = await this.userRepository.save(userEntity);
     return this.mapperUserService.entityToClass(createdUserEntity);
   }
-
   async findAll(): Promise<User[]> {
     const usersEntities = await this.userRepository.find();
-
     return usersEntities.map((usersEntities) =>
       this.mapperUserService.entityToClass(usersEntities),
     );
   }
-
   async findById(id: number): Promise<User> {
     const userFound = await this.userRepository.findOne({ where: { id } });
     if (!userFound) {
       return null;
     }
-
     return this.mapperUserService.entityToClass(userFound);
   }
-
   async update(id: number, newUser: User): Promise<User> {
     const currentUserEntity = await this.userRepository.findOne({
       where: { id },
     });
-
     const newUserEntity = this.mapperUserService.classToEntity(newUser);
-
     this.userRepository.merge(currentUserEntity, newUserEntity);
     const savedUserEntity = await this.userRepository.save(currentUserEntity);
     return this.mapperUserService.entityToClass(savedUserEntity);
   }
-
   async delete(id: number): Promise<void> {
     await this.userRepository.delete(id);
   }

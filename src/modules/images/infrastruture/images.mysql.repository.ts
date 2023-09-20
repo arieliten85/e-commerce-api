@@ -5,7 +5,6 @@ import { ImagesRepository } from "../aplication/repository/images.repository";
 import { ImagesEntity } from "./entities/images.entity";
 import { Images } from "../domain/images.domain";
 import { MapperImages } from "../aplication/mappers/mapper.service.images";
-import { UpdateImageDto } from "../controllers/dto/update-image.dto";
 
 @Injectable()
 export class ImagesMysqlRepository implements ImagesRepository {
@@ -16,9 +15,9 @@ export class ImagesMysqlRepository implements ImagesRepository {
   ) {}
 
   async create(images: Images) {
-    const imageEntity = this.mapperImages.classToEntityImages(images);
+    const imageEntity = this.mapperImages.classToEntity(images);
     const savedImage = await this.imagesRepository.save(imageEntity);
-    return this.mapperImages.entityToClassImages(savedImage);
+    return this.mapperImages.entityToClass(savedImage);
   }
 
   async findAll(): Promise<Images[]> {
@@ -27,7 +26,7 @@ export class ImagesMysqlRepository implements ImagesRepository {
     });
 
     return imagesEntities.map((imgEntity) =>
-      this.mapperImages.entityToClassImages(imgEntity),
+      this.mapperImages.entityToClass(imgEntity),
     );
   }
 
@@ -41,22 +40,20 @@ export class ImagesMysqlRepository implements ImagesRepository {
       return null;
     }
 
-    return this.mapperImages.entityToClassImages(imageEntity);
+    const imagesClass = this.mapperImages.entityToClass(imageEntity);
+
+    return imagesClass;
   }
 
-  async update(id: number, newProduct: UpdateImageDto): Promise<Images> {
-    const imageEntity = await this.imagesRepository.findOne({
-      where: { id },
-      relations: { product: true },
-    });
-
-    this.imagesRepository.merge(imageEntity, newProduct);
-    const updatedImage = await this.imagesRepository.save(imageEntity);
-
-    return this.mapperImages.entityToClassImages(updatedImage);
+  // prettier-ignore
+  async update(currentImages: ImagesEntity, imagesEdit: Images): Promise<Images> {
+    const imagesMerged = this.imagesRepository.merge(currentImages, imagesEdit);
+    const updatedImage = await this.imagesRepository.save(imagesMerged);
+    return this.mapperImages.entityToClass(updatedImage);
   }
 
-  async delete(id: number): Promise<void> {
-    await this.imagesRepository.delete(id);
+  async delete(id: number): Promise<number> {
+    const response = await this.imagesRepository.delete(id);
+    return response.affected;
   }
 }

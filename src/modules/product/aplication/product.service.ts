@@ -7,11 +7,18 @@ import { MapperProduct } from "./mappers/mappers.product";
 import { Product } from "../dominio/producto.domain";
 import { CATEGORY_REPOSITORY } from "../../category/aplication/repository/category.repository";
 import { CategoryMysqlRepository } from "../../category/infrastructure/category.mysql.repository";
+import {
+  IMAGES_STORAGE_FS_REPOSITORY,
+  ImagesFsRepository,
+} from "../../images/aplication/repository/images.fs.repository";
+import {
+  IMAGES_REPOSITORY,
+  ImagesRepository,
+} from "../../images/aplication/repository/images.repository";
 
 const MESSAGE_ERROR = {
   PRODUCT_NOT_FOUND: "Product not found.",
   PRODUCT_NOT_DELETE: "Opps, the product dont has been deleted.",
-
   CATEGORY_NOT_FOUND: "Category not found.",
 };
 
@@ -24,62 +31,61 @@ export class ProductService {
     @Inject(CATEGORY_REPOSITORY)
     private readonly categoryRepository: CategoryMysqlRepository,
 
+    @Inject(IMAGES_STORAGE_FS_REPOSITORY)
+    private readonly imagesFsRepository: ImagesFsRepository,
+
+    @Inject(IMAGES_REPOSITORY)
+    private readonly imagesRepository: ImagesRepository,
+
     private readonly mapperProduct: MapperProduct,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const productClass: Product =
       this.mapperProduct.dtoToClass(createProductDto);
-
     const categoryFound = await this.categoryRepository.findOne(
       createProductDto.category_id,
     );
-
     if (!categoryFound) {
       throw new BadRequestException(MESSAGE_ERROR.CATEGORY_NOT_FOUND);
     }
     productClass.category = categoryFound;
     return await this.productRepository.create(productClass);
   }
-
   async findAll(): Promise<Product[]> {
     return await this.productRepository.findAll();
   }
-
   async findOne(id: number): Promise<Product> {
-    const userFound = await this.productRepository.findOne(id);
-
-    if (!userFound) {
+    const productFound = await this.productRepository.findOne(id);
+    if (!productFound) {
       throw new BadRequestException(MESSAGE_ERROR.PRODUCT_NOT_FOUND);
     }
-
-    return userFound;
+    return productFound;
   }
-
   async update(
     id: number,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     const userFound: Product = await this.findOne(id);
-
     if (!userFound) {
       throw new BadRequestException(MESSAGE_ERROR.PRODUCT_NOT_FOUND);
     }
-
-    const userFoundClass = this.mapperProduct.classToEntity(userFound);
+    const userFoundEntity = this.mapperProduct.classToEntity(userFound);
     const productClass = this.mapperProduct.dtoToClass(updateProductDto);
-
-    return this.productRepository.update(userFoundClass, productClass);
+    return this.productRepository.update(userFoundEntity, productClass);
   }
-
   async delete(id: number): Promise<string> {
     const userFound: Product = await this.findOne(id);
-
     if (!userFound) {
       throw new BadRequestException(MESSAGE_ERROR.PRODUCT_NOT_FOUND);
     }
+    const arrayImagesPathProduct = userFound.images;
+    arrayImagesPathProduct.map((item) =>
+      this.imagesFsRepository.delete(item.url),
+    );
+    const arrayIdImagesProduct = userFound.images;
+    arrayIdImagesProduct.map((item) => this.imagesRepository.delete(item.id));
     const affected = await this.productRepository.delete(id);
-
     if (affected !== 1) {
       throw new BadRequestException(MESSAGE_ERROR.PRODUCT_NOT_DELETE);
     }

@@ -11,7 +11,6 @@ export class CreateImagesDto {
   product?: Product;
 
   @IsNumber()
-  @IsNotEmpty()
   product_id?: number;
 
   @IsNotEmpty()

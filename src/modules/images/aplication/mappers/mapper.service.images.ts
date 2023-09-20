@@ -4,31 +4,28 @@ import { Images } from "../../domain/images.domain";
 import { ImagesEntity } from "../../infrastruture/entities/images.entity";
 import { ProductEntity } from "src/modules/product/infrastucture/entities/product.entity";
 
+import { UpdateImageDto } from "../../controllers/dto/update-image.dto";
+
 @Injectable()
 export class MapperImages {
-  dtoToClassImages(imagesDTO: CreateImagesDto) {
+  dtoToClass(imagesDto: CreateImagesDto | UpdateImageDto) {
     const newImages = new Images();
 
-    newImages.url = imagesDTO.url;
-    newImages.product_id = imagesDTO.product_id;
-    newImages.product = imagesDTO.product;
+    newImages.url = imagesDto.url;
+    newImages.product_id = imagesDto.product_id;
+    newImages.product = imagesDto.product;
     return newImages;
   }
-  dtoImagesToImages(images: string[]): Images[] {
-    return images.map((imageUrl) => {
-      const image = new Images();
-      image.url = imageUrl;
-      return image;
-    });
-  }
-  classToEntityImages(classInstance: Images): ImagesEntity {
+
+  classToEntity(classInstance: Images): ImagesEntity {
     const newEntity = new ImagesEntity();
 
+    newEntity.id = classInstance.id;
     newEntity.url = classInstance.url;
     newEntity.product = classInstance.product as ProductEntity;
     return newEntity;
   }
-  entityToClassImages(classEntity: ImagesEntity) {
+  entityToClass(classEntity: ImagesEntity) {
     const newImages = new Images();
 
     newImages.id = classEntity.id;

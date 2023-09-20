@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
   UseInterceptors,
@@ -17,6 +17,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { UpdateImageDto } from "./dto/update-image.dto";
 import { memoryStorage } from "multer";
 import { CreateImagesDto } from "./dto/create-image.dto";
+import { Images } from "../domain/images.domain";
 
 const storage = memoryStorage();
 
@@ -43,22 +44,36 @@ export class ImagesController {
   }
 
   @Get()
-  findAll() {
-    return this.imagesService.findAll();
+  async findAll(): Promise<Images[]> {
+    return await this.imagesService.findAll();
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.imagesService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return await this.imagesService.findOne(id);
   }
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateImageDto: UpdateImageDto) {
-    return this.imagesService.update(+id, updateImageDto);
+  @Put()
+  @UseInterceptors(
+    FileInterceptor("file", {
+      storage: storage,
+    }),
+  )
+  async update(
+    @UploadedFile() file: Express.Multer.File,
+
+    @Body("image_id", ParseIntPipe) image_id: number,
+  ) {
+    const updateImageDto: UpdateImageDto = {
+      url: file.originalname,
+      image_id: image_id,
+      buffer: file.buffer,
+    };
+    return await this.imagesService.update(updateImageDto);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.imagesService.remove(+id);
+  remove(@Param("id", ParseIntPipe) id: number) {
+    return this.imagesService.remove(id);
   }
 }

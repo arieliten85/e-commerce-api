@@ -20,4 +20,23 @@ export class ImagesStorageFsRepository implements ImagesFsRepository {
   async delete(filePath: string): Promise<void> {
     await fs.unlink(filePath);
   }
+
+  async update(
+    filePath: string,
+    buffer: Buffer,
+    originalName: string,
+  ): Promise<string> {
+    // Delete the old file
+    await this.delete(filePath);
+
+    // Create the new file
+    const outputPath = path.join("upload-images");
+
+    const fileName = `${uuidv4()}_${path.basename(originalName)}`;
+    const newFilePath = path.join(outputPath, fileName);
+
+    await fs.writeFile(newFilePath, buffer);
+
+    return newFilePath.toString();
+  }
 }

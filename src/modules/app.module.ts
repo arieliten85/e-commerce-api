@@ -7,6 +7,7 @@ import { ConfigModule } from "@nestjs/config";
 import { configuration } from "../config/configuration";
 import { ProductModule } from "./product/product.module";
 import { CategoryModule } from "./category/category.module";
+
 import { ImagesModule } from "./images/images.module";
 
 @Module({

@@ -27,11 +27,13 @@ export class MapperProduct {
 
   entityToClass(productEntity: ProductEntity): Product {
     const productClass = new Product();
+
     productClass.id = productEntity.id;
     productClass.name = productEntity.name;
     productClass.desc = productEntity.desc;
     productClass.price = productEntity.price;
     productClass.category = productEntity.category;
+    productClass.images = productEntity.images;
 
     return productClass;
   }
