@@ -31,6 +31,7 @@ export class MapperProduct {
     productClass.name = productEntity.name;
     productClass.desc = productEntity.desc;
     productClass.price = productEntity.price;
+    productClass.category = productEntity.category;
 
     return productClass;
   }

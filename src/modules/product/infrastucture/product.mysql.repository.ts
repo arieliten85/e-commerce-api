@@ -19,7 +19,9 @@ export class ProductMysqlRepository implements ProductRepository {
   }
 
   async findAll(): Promise<Product[]> {
-    const allUserEntity = await this.productRepository.find();
+    const allUserEntity = await this.productRepository.find({
+      relations: { category: true },
+    });
 
     return allUserEntity.map((product) =>
       this.mapperProduct.entityToClass(product),
@@ -28,7 +30,8 @@ export class ProductMysqlRepository implements ProductRepository {
 
   async findOne(id: number): Promise<Product> {
     const userFound = await this.productRepository.findOne({
-      where: { id: `${id}` },
+      where: { id },
+      relations: { category: true },
     });
 
     if (!userFound) {
