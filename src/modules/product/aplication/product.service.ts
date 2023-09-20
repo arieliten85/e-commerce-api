@@ -5,8 +5,8 @@ import { ProductMysqlRepository } from "../infrastucture/product.mysql.repositor
 import { PRODUCT_REPOSITORY } from "./repository/product.repositorio";
 import { MapperProduct } from "./mappers/mappers.product";
 import { Product } from "../dominio/producto.domain";
-import { CATEGORY_REPOSITORY } from "src/modules/category/aplication/repository/category.repository";
-import { CategoryMysqlRepository } from "src/modules/category/infrastructure/category.mysql.repository";
+import { CATEGORY_REPOSITORY } from "../../category/aplication/repository/category.repository";
+import { CategoryMysqlRepository } from "../../category/infrastructure/category.mysql.repository";
 
 const MESSAGE_ERROR = {
   PRODUCT_NOT_FOUND: "Product not found.",
