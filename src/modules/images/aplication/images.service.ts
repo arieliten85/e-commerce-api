@@ -5,15 +5,16 @@ import {
   IMAGES_REPOSITORY,
   ImagesRepository,
 } from "./repository/images.repository";
+
+import { Images } from "../domain/images.domain";
 import {
   PRODUCT_REPOSITORY,
   ProductRepository,
-} from "src/modules/product/aplication/repository/product.repositorio";
+} from "../../product/aplication/repository/product.repositorio";
 import {
   IMAGES_STORAGE_FS_REPOSITORY,
   ImagesFsRepository,
 } from "./repository/images.fs.repository";
-import { Images } from "../domain/images.domain";
 
 @Injectable()
 export class ImagesService {
