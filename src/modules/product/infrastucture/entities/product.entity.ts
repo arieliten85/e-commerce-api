@@ -1,5 +1,5 @@
-import { CategoryEntity } from "src/modules/category/infrastructure/entities/category.entity";
-import { ImagesEntity } from "src/modules/images/infrastruture/entities/images.entity";
+import { CategoryEntity } from "../../../category/infrastructure/entities/category.entity";
+import { ImagesEntity } from "../../../images/infrastruture/entities/images.entity";
 import {
   Column,
   CreateDateColumn,
