@@ -15,7 +15,7 @@ import {
   IMAGES_REPOSITORY,
   ImagesRepository,
 } from "../../images/aplication/repository/images.repository";
-import { Images } from "src/modules/images/domain/images.domain";
+import { Images } from "../../images/domain/images.domain";
 
 const MESSAGE_ERROR = {
   PRODUCT_NOT_FOUND: "Product not found.",
