@@ -39,4 +39,16 @@ export class ImagesStorageFsRepository implements ImagesFsRepository {
 
     return newFilePath.toString();
   }
+
+  //prettier-ignore
+  async createArrayPathImages(  imagesFiles: Express.Multer.File[], ): Promise<string[]> {
+    const filePaths = await Promise.all(
+      imagesFiles.map(async (file) => {
+        const { buffer, originalname } = file;
+        const filePath = await this.create(buffer, originalname);
+        return filePath;
+      }),
+    );
+    return filePaths;
+  }
 }

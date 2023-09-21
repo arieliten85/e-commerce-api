@@ -15,6 +15,7 @@ import {
   IMAGES_REPOSITORY,
   ImagesRepository,
 } from "../../images/aplication/repository/images.repository";
+import { Images } from "src/modules/images/domain/images.domain";
 
 const MESSAGE_ERROR = {
   PRODUCT_NOT_FOUND: "Product not found.",
@@ -41,16 +42,37 @@ export class ProductService {
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
+    const { imagesFiles, category_id } = createProductDto;
+
     const productClass: Product =
       this.mapperProduct.dtoToClass(createProductDto);
-    const categoryFound = await this.categoryRepository.findOne(
-      createProductDto.category_id,
-    );
+
+    const categoryFound = await this.categoryRepository.findOne(category_id);
     if (!categoryFound) {
       throw new BadRequestException(MESSAGE_ERROR.CATEGORY_NOT_FOUND);
     }
     productClass.category = categoryFound;
-    return await this.productRepository.create(productClass);
+
+    const newProduct = await this.productRepository.create(productClass);
+
+    const filePathImage =
+      await this.imagesFsRepository.createArrayPathImages(imagesFiles);
+
+    const newImages = filePathImage.map((filePath) => {
+      const newImage = new Images();
+      newImage.url = filePath;
+      newImage.product = newProduct;
+
+      return newImage;
+    });
+
+    await Promise.all(
+      newImages.map(async (item) => {
+        await this.imagesRepository.create(item);
+      }),
+    );
+
+    return newProduct;
   }
   async findAll(): Promise<Product[]> {
     return await this.productRepository.findAll();

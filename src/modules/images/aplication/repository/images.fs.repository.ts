@@ -8,4 +8,6 @@ export interface ImagesFsRepository {
     buffer: Buffer,
     originalName: string,
   ): Promise<string>;
+
+  createArrayPathImages(imagesFiles: Express.Multer.File[]): Promise<string[]>;
 }
